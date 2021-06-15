@@ -1,0 +1,10 @@
+/build
+/doc/build
+/.auto.deps
+/.config.cmd
+/.config.old
+/..config.tmp
+/.config
+/*.patch
+/*.diff
+/a.out
