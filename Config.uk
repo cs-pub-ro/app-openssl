@@ -2,6 +2,7 @@ menuconfig APPOPENSSL_DEPENDENCIES
         bool "OpenSSL Application"
         default y
         select PLAT_KVM
+        select LIBUKLIBPARAM
         select LIBNEWLIBC
         select LIBOPENSSL
         select LIBCRYPTO
