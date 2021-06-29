@@ -6,6 +6,8 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
+#include "measure.h"
+
 #define KEYFILE			"private.pem"
 #define SIGFILE			"signature.dat"
 #define ED25519_SIGSIZE		64
@@ -215,6 +217,8 @@ static void sign_wrapper(const char *text, const char *key_buf, unsigned int num
 	unsigned char msg[512];
 	unsigned char sig[ED25519_SIGSIZE];
 	size_t i;
+	uint64_t cycles_start, cycles_end;
+	uint64_t total = 0;
 
 	EVP_PKEY *key = read_secret_key_from_buffer(key_buf);
 	if (!key)
@@ -223,12 +227,17 @@ static void sign_wrapper(const char *text, const char *key_buf, unsigned int num
 	memset(msg, 0, 512);
 	memcpy(msg, text, strlen(text));
 	for (i = 0; i < num_times; i++) {
+		cycles_start = bench_start();
 		ret = do_sign(key, msg, 512, sig, &slen);
+		cycles_end = bench_end();
+		total += (cycles_end - cycles_start);
 		if (ret != 1)
 			exit(EXIT_FAILURE);
 	}
 	printf("Signature: ");
 	print_hex(sig, slen);
+
+	printf("Cycles per operation: %lu\n", total/num_times);
 
 	EVP_PKEY_free(key);
 }
@@ -239,6 +248,8 @@ static void verify_wrapper(const char *text, const char *sig, const char *key_bu
 	size_t slen = ED25519_SIGSIZE;
 	unsigned char msg[512];
 	size_t i;
+	uint64_t cycles_start, cycles_end;
+	uint64_t total = 0;
 
 	EVP_PKEY *key = read_public_key_from_buffer(key_buf);
 	if (!key)
@@ -247,11 +258,16 @@ static void verify_wrapper(const char *text, const char *sig, const char *key_bu
 	memset(msg, 0, 512);
 	memcpy(msg, text, strlen(text));
 	for (i = 0; i < num_times; i++) {
+		cycles_start = bench_start();
 		ret = do_verify(key, msg, 512, sig, slen);
+		cycles_end = bench_end();
+		total += (cycles_end - cycles_start);
 		if (ret != 1)
 			exit(EXIT_FAILURE);
 	}
 	printf("Verification sucessful.\n");
+
+	printf("Cycles per operation: %lu\n", total/num_times);
 
 	EVP_PKEY_free(key);
 }
