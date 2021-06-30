@@ -82,9 +82,10 @@ static EVP_PKEY *read_public_key_from_buffer(const char *buffer)
 		fprintf(stderr, "BIO_new_mem_buf: %s\n", ERR_error_string(ERR_get_error(), err_buf));
 		goto out;
 	}
+
 	key = PEM_read_bio_PUBKEY(bufio, NULL, NULL, NULL);
 	if (key == NULL)
-		fprintf(stderr, "PEM_read_bio_PUBKEY: %s", ERR_error_string(ERR_get_error(), err_buf));
+		fprintf(stderr, "PEM_read_bio_PUBKEY: %s\n", ERR_error_string(ERR_get_error(), err_buf));
 
 	BIO_free(bufio);
 out:
@@ -147,7 +148,7 @@ static int do_sign(EVP_PKEY *key, const unsigned char *msg, const size_t mlen,
 	}
 
 	/* Success */
-	return 1;
+	ret = 1;
 
 err_digest:
 	EVP_MD_CTX_destroy(mdctx);
@@ -202,7 +203,7 @@ static int do_verify(EVP_PKEY *key, const unsigned char *msg, const size_t mlen,
 	}
 
 	/* Success */
-	return 1;
+	ret = 1;
 
 err_digest:
 	EVP_MD_CTX_destroy(mdctx);

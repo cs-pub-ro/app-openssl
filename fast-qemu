@@ -46,7 +46,7 @@ sudo perf stat sudo taskset -c 7 ${QEMU_PATH} \
 sudo perf stat sudo taskset -c 7 ${QEMU_PATH} \
     -enable-kvm -nographic -device isa-debug-exit \
     -kernel ${KERNEL_PATH} -m 20M \
-    -append "s \"$text\" \"$private_key\" 100" \
+    -append "s \"$text\" \"$private_key\" 5000" \
     -nodefaults -no-user-config -serial stdio \
     -cpu host,migratable=no,+invtsc
 
@@ -54,6 +54,6 @@ sudo perf stat sudo taskset -c 7 ${QEMU_PATH} \
 sudo perf stat sudo taskset -c 7 ${QEMU_PATH} \
     -enable-kvm -nographic -device isa-debug-exit \
     -kernel ${KERNEL_PATH} -m 20M \
-    -append "v \"$text\" \"$public_key\" \"$signature\" 100" \
+    -append "v \"$text\" \"$public_key\" \"$signature\" 5000" \
     -nodefaults -no-user-config -serial stdio \
     -cpu host,migratable=no,+invtsc
